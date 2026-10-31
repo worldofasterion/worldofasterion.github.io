@@ -112,7 +112,7 @@
     if (!social || !Array.isArray(social.sources) || !social.sources.length) return "";
 
     const limit = Math.max(1, Math.min(5, Number(social.limit_per_source) || 3));
-    const sources = social.sources.map(function (source) {
+    const sources = social.sources.filter(function (source) { return !source.in_news; }).map(function (source) {
       const sourceHref = safeHref(source.url);
       const items = Array.isArray(source.items) ? source.items.slice(0, limit) : [];
       const entries = items.length
@@ -138,15 +138,18 @@
   }
 
   function renderSidebar() {
-    const news = data.config.news.map(function (item) {
+    function newsItem(item) {
       const href = safeHref(item.route);
       return `
         <article class="news-item">
-          <div class="news-date">${escapeHtml(formatDate(item.date))}</div>
+          <div class="news-date">${escapeHtml(formatDate(item.date))}${item.source ? ` · ${escapeHtml(item.source)}` : ""}</div>
           <h3><a href="${escapeHtml(href)}"${linkAttributes(href)}>${escapeHtml(item.title)}</a></h3>
           <p>${escapeHtml(item.text)}</p>
         </article>`;
-    }).join("");
+    }
+    const news = data.config.news.slice(0, 5).map(newsItem).join("");
+    const olderNews = data.config.news.slice(5);
+    const archive = olderNews.length ? `<details class="news-archive"><summary>Starší novinky (${olderNews.length})</summary>${olderNews.map(newsItem).join("")}</details>` : "";
 
     const panels = data.config.panels.map(function (panel) {
       const links = panel.links.map(function (item) {
@@ -156,7 +159,7 @@
       return `<section class="right-panel"><h2>${escapeHtml(panel.title)}</h2><ul class="plain-links">${links}</ul></section>`;
     }).join("");
 
-    right.innerHTML = `<section class="right-panel"><h2>Novinky</h2>${news}</section>${renderSocialPanel()}${panels}`;
+    right.innerHTML = `<section class="right-panel"><h2>Novinky</h2>${news}${archive}</section>${renderSocialPanel()}${panels}`;
   }
 
   function renderHome() {
@@ -172,6 +175,7 @@
       <p class="intro">${escapeHtml(data.config.intro)}</p>
       <p class="stats-line">
         <span><strong>${stats.catalog_items}</strong> unikátních souborů</span>
+        ${stats.public_patreon_posts ? `<span><a href="#/materials?group=${encodeURIComponent("Veřejně z Patreonu")}"><strong>${stats.public_patreon_posts}</strong> veřejných příspěvků z Patreonu</a></span>` : ""}
         <span><a href="#/dech-draka?tag=pov%C3%ADdka"><strong>${stats.dech_draka_stories}</strong> povídek</a></span>
         <span><a href="#/dech-draka?tag=dobrodru%C5%BEstv%C3%AD"><strong>${stats.dech_draka_adventures}</strong> dobrodružství</a></span>
         <span><a href="#/dech-draka?tag=tematick%C3%BD%20%C4%8Dl%C3%A1nek"><strong>${stats.dech_draka_thematic_articles}</strong> tematických článků</a></span>
@@ -280,6 +284,7 @@
         <a href="#/maps"><strong>Mapy</strong><span>${countGroup("Mapy")} map a plánků</span></a>
         <a href="#/rules"><strong>Aplikace pravidel</strong><span>${countGroup("Aplikace pravidel")} souborů</span></a>
         <a href="#/indexes"><strong>Rejstříky a databáze</strong><span>${countGroup("Rejstříky a databáze")} soubory</span></a>
+        ${data.stats.patreon_catalogue_entries ? `<a href="#/materials?group=${encodeURIComponent("Veřejně z Patreonu")}"><strong>Veřejně z Patreonu</strong><span>${data.stats.patreon_catalogue_entries} článků a galerií · ${data.stats.patreon_pdfs} PDF</span></a>` : ""}
         <a href="#/materials?group=${encodeURIComponent("Vaše tvorba")}"><strong>Vaše tvorba</strong><span>${countGroup("Vaše tvorba")} příspěvků</span></a>
       </nav>` : "";
 
@@ -308,7 +313,7 @@
         </div>
         <div class="catalog-actions"><button type="button" id="catalog-reset">Vymazat</button></div>
       </form>
-      <p class="catalog-search-note">Hledání prochází názvy, témata a také text ${data.stats.fulltext_items || 0} rozpoznaných dokumentů.</p>
+      <p class="catalog-search-note">Hledání prochází názvy, témata, text ${data.stats.fulltext_items || 0} rozpoznaných dokumentů i texty veřejných příspěvků z Patreonu.</p>
       <p class="result-count" id="result-count" aria-live="polite"></p>
       <div class="material-list" id="material-list"></div>
       <button type="button" class="load-more" id="load-more">Zobrazit další</button>`;
@@ -340,7 +345,7 @@
         const items = grouped[group].sort(function (a, b) { return a.title.localeCompare(b.title, "cs"); });
         const files = items.map(function (item) {
           const href = safeHref(item.href);
-          return `<div class="rule-file"><a href="${escapeHtml(href)}">${escapeHtml(item.title)}</a><span>${escapeHtml(item.extension.toUpperCase())}, ${escapeHtml(formatBytes(item.size))}</span></div>`;
+          return `<div class="rule-file"><a href="${escapeHtml(href)}"${linkAttributes(href)}>${escapeHtml(item.title)}</a><span>${escapeHtml(catalogItemInfo(item, true))}</span>${catalogPostLinks(item)}</div>`;
         }).join("");
         return `
           <section class="rules-system catalog-overview-group">
@@ -372,7 +377,7 @@
       if (path === "adventures") filtered.sort(function (a, b) { return a.title.localeCompare(b.title, "cs"); });
 
       const visible = filtered.slice(0, shown);
-      const options = { search: search, showGroup: path !== "adventures" && !filters.group && !preset.group, showSummary: path === "adventures" || path === "indexes" };
+      const options = { search: search, showGroup: path !== "adventures" && !filters.group && !preset.group, showSummary: path === "adventures" || path === "indexes" || filters.group === "Veřejně z Patreonu" };
       list.innerHTML = path === "maps"
         ? renderMapGroups(visible, options)
         : (visible.map(function (item) { return materialRow(item, options); }).join("") || '<p class="empty-result">Tomuto výběru neodpovídá žádný soubor.</p>');
@@ -438,11 +443,29 @@
     const summary = options.showSummary && item.summary ? `<p class="material-summary">${escapeHtml(item.summary)}</p>` : "";
     return `
       <article class="material-row${summary ? " with-summary" : ""}">
-        <h2><a href="${escapeHtml(href)}">${escapeHtml(item.title)}</a></h2>
-        <div class="file-info">${escapeHtml(formatBytes(item.size))}</div>
+        <h2><a href="${escapeHtml(href)}"${linkAttributes(href)}>${escapeHtml(item.title)}</a></h2>
+        <div class="file-info">${escapeHtml(catalogItemInfo(item))}</div>
         ${summary}
+        ${catalogPostLinks(item)}
         ${meta.length ? `<div class="meta">${meta.join(" · ")}</div>` : ""}
       </article>`;
+  }
+
+  function catalogItemInfo(item, showType) {
+    if (item.extension === "web") return "Patreon · " + formatDate(item.published_date);
+    return (showType ? item.extension.toUpperCase() + ", " : "") + formatBytes(item.size);
+  }
+
+  function catalogPostLinks(item) {
+    const attachments = (item.attachments || []).map(function (file) {
+      const href = safeHref(file.href);
+      return `<a href="${escapeHtml(href)}">${escapeHtml(file.label)} (PDF, ${escapeHtml(formatBytes(file.size))})</a>`;
+    });
+    const related = (item.related_posts || []).map(function (post) {
+      const href = safeHref(post.url);
+      return `<a href="${escapeHtml(href)}"${linkAttributes(href)}>Další verze: ${escapeHtml(post.title)}</a>`;
+    });
+    return attachments.length || related.length ? `<div class="catalog-post-links">${attachments.concat(related).join(" · ")}</div>` : "";
   }
 
   function renderDechDraka(query) {
