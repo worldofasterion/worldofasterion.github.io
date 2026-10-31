@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const app = fs.readFileSync(path.join(root, "assets/site.js"), "utf8");
 const bootstrap = fs.readFileSync(path.join(root, "assets/theme-init.js"), "utf8");
+const css = fs.readFileSync(path.join(root, "assets/site.css"), "utf8");
 
 function initialTheme(saved, search = "", storageBlocked = false) {
   const document = { documentElement: { dataset: { theme: "dark" } } };
@@ -52,4 +53,11 @@ test("sidebar and home replace the archive shortcut with the existing Asterion P
 test("home keeps historical posts without the redundant archive heading", () => {
   assert.doesNotMatch(app, /Z titulní strany Asterionu|homepage-history-title/);
   assert.ok(app.includes('<div class="legacy-content homepage-history-content">${historicalHome}</div>'));
+});
+
+test("dark theme uses charcoal surfaces and readable historical headings", () => {
+  const darkTheme = css.match(/html\[data-theme="dark"\] \{([^}]+)\}/)[1];
+  assert.match(darkTheme, /--paper: #202321;/);
+  assert.match(darkTheme, /--paper-light: #272b28;/);
+  assert.match(css, /html\[data-theme="dark"\] \.homepage-history-content \.ce_text > h2:first-child,[\s\S]*?color: var\(--gold\);/);
 });

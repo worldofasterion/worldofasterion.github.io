@@ -14,16 +14,16 @@
 }
 
 html[data-theme="dark"] {
-  --page-bg: #000;
-  --paper: #000;
-  --paper-light: #050505;
-  --paper-dark: #111;
-  --ink: #e3e3e3;
-  --muted: #aaa;
-  --gold: #d1be45;
-  --gold-bright: #d1be45;
-  --teal: #9dbbc2;
-  --line: #4a4a4a;
+  --page-bg: #101210;
+  --paper: #202321;
+  --paper-light: #272b28;
+  --paper-dark: #171a18;
+  --ink: #e5e5de;
+  --muted: #b9bcb6;
+  --gold: #d9c861;
+  --gold-bright: #d9c861;
+  --teal: #abc7cc;
+  --line: #565e58;
 }
 
 * {
@@ -1523,6 +1523,7 @@ html[data-theme="dark"] .right-sidebar h2 {
 }
 
 html[data-theme="dark"] main h2,
+html[data-theme="dark"] .homepage-history-content .ce_text > h2:first-child,
 html[data-theme="dark"] .featured-item h3 {
   color: var(--gold);
 }
@@ -1530,41 +1531,41 @@ html[data-theme="dark"] .featured-item h3 {
 html[data-theme="dark"] input[type="search"],
 html[data-theme="dark"] select {
   border-color: #666;
-  background: #111;
+  background: var(--paper-dark);
   color: #eee;
   color-scheme: dark;
 }
 
 html[data-theme="dark"] button {
   border-color: #666;
-  background: #191919;
+  background: #2b302c;
   color: #eee;
 }
 
 html[data-theme="dark"] button:hover {
-  background: #2b2b2b;
+  background: #353c36;
 }
 
 html[data-theme="dark"] .catalog-controls,
 html[data-theme="dark"] .empty-result,
 html[data-theme="dark"] .error-message {
   border-color: #555;
-  background: #090909;
+  background: var(--paper-dark);
 }
 
 html[data-theme="dark"] .control-grid label,
 html[data-theme="dark"] .material-row .file-info,
 html[data-theme="dark"] .tags,
 html[data-theme="dark"] .archive-list small {
-  color: #aaa;
+  color: var(--muted);
 }
 
 html[data-theme="dark"] .gallery-item img {
-  background: #0b0b0b;
+  background: var(--paper-dark);
 }
 
 html[data-theme="dark"] footer {
-  background: #080808;
+  background: var(--paper-dark);
 }
 
 @media (max-width: 900px) {
