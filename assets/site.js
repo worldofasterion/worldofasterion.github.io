@@ -28,14 +28,6 @@
   const pageSize = 30;
   let timelineController = null;
 
-  function storedTheme() {
-    try {
-      return window.localStorage.getItem("asterion-theme");
-    } catch (_error) {
-      return null;
-    }
-  }
-
   function applyTheme(theme, remember) {
     const dark = theme === "dark";
     document.documentElement.dataset.theme = dark ? "dark" : "light";
@@ -188,7 +180,7 @@
         <section><h2><a href="#/materials">Materiály ke stažení</a></h2><p>Mapy, dobrodružství, pravidlové aplikace, články a další herní materiály.</p></section>
         <section><h2><a href="#/dech-draka">Co vyšlo v Dechu draka</a></h2><p>Povídky, dobrodružství, postavy, bestiář a tematické články. <a href="#/dech-draka-cela-cisla">Celá čísla ke stažení</a>.</p></section>
         <section><h2><a href="#/modules">Herní moduly</a></h2><p>Popisy modulů, aplikace pravidel, doplňky, mapy a dobrodružství.</p></section>
-        <section><h2><a href="#/archive">Archiv článků</a></h2><p>Články z webu a časopisů, profily autorů a další texty o Asterionu.</p></section>
+        <section><h2><a href="https://www.patreon.com/AsterionRPG/posts" target="_blank" rel="noopener">Asterion na Patreonu</a></h2><p>Nové materiály, ukázky z tvorby a zprávy ze světa Asterionu.</p></section>
       </div>
       ${historicalHome ? `
         <section class="homepage-history" aria-labelledby="homepage-history-title">
@@ -1925,11 +1917,7 @@
     location.hash = value ? "#/materials?q=" + encodeURIComponent(value) : "#/materials";
   });
 
-  const requestedTheme = new URLSearchParams(location.search).get("theme");
-  const initialTheme = requestedTheme === "dark" || requestedTheme === "light"
-    ? requestedTheme
-    : (storedTheme() === "dark" ? "dark" : "light");
-  applyTheme(initialTheme, false);
+  applyTheme(document.documentElement.dataset.theme, false);
   renderSidebar();
   initializeTimelineDock();
   window.addEventListener("hashchange", renderRoute);
