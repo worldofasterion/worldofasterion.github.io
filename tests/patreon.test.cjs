@@ -54,6 +54,6 @@ test('import is idempotent, searchable, and replaces the unverified social cache
   assert.equal(JSON.stringify(data), before);
   assert.ok(data.catalog.find(p => p.id === 'patreon-147991323').search_text.includes('modernizovat informace o měnách'));
   const social = data.social.sources.find(p => p.id === 'patreon');
-  assert.equal(social.in_news, true);
+  assert.equal(social.in_news, false);
   assert.equal(social.items.length, 37);
 });

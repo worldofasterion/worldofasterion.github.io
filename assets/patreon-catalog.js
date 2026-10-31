@@ -28,7 +28,7 @@
   data.config.news.sort((a, b) => (b.published_at || b.date).localeCompare(a.published_at || a.date));
   const social = data.social && data.social.sources.find(item => item.id === 'patreon');
   if (social) {
-    social.in_news = true;
+    social.in_news = false;
     social.update_mode = 'anonymous-public-filter-verified';
     social.items = source.items.map(post => ({ date: post.date, title: post.title, url: post.url }));
   }

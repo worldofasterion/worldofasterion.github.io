@@ -11,6 +11,6 @@ Ověřeno 31. 10. 2026 na nepřihlášené stránce AsterionRPG pomocí filtru *
 - V katalogu jsou pracovní AI ilustrace výslovně označené podle textu zdrojových příspěvků. Nejsou vydávané za schválené knižní ilustrace.
 - Datum vydání pochází z veřejné mapy Patreonu; přesný původní čas zůstává uložený v `published_at`, zobrazený den se převádí do `Europe/Prague`.
 - Do panelu Novinky byly přidané i historické položky s původními daty. Starší položky se zobrazí po rozbalení „Starší novinky“.
-- Starý panel Patreonu odvozený jen z mapy webu byl nahrazen ověřenými veřejnými položkami v Novinkách. Mapa webu sama o sobě není důkazem veřejného přístupu k obsahu.
+- Starý panel Patreonu odvozený jen z mapy webu byl nahrazen ověřenými veřejnými položkami. Vedle Novinek jsou znovu dostupné i v kompaktním bloku „Nově na Patreonu“, včetně rozbalitelného seznamu starších příspěvků. Mapa webu sama o sobě není důkazem veřejného přístupu k obsahu.
 
 `tools/import-patreon.cjs` vytváří datový doplněk z anonymního DOM soupisu a mapy webu. Nečte soukromé rukopisy, autorský účet ani rozpracované příspěvky. Příští aktualizace musí znovu ověřit filtr Public; starší kopie seznamu negarantuje aktuální dostupnost.

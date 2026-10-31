@@ -308,7 +308,8 @@ button:hover {
   font-size: 12px;
 }
 
-.news-archive summary {
+.news-archive summary,
+.social-archive summary {
   margin: 10px 0 14px;
   color: var(--gold);
   cursor: pointer;
@@ -347,6 +348,12 @@ button:hover {
   display: block;
   font-size: 12px;
   line-height: 1.25;
+}
+
+.social-item-links a {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .social-empty,
