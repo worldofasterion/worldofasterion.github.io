@@ -48,3 +48,8 @@ test("sidebar and home replace the archive shortcut with the existing Asterion P
   }
   assert.match(app, /function renderArchive\(/);
 });
+
+test("home keeps historical posts without the redundant archive heading", () => {
+  assert.doesNotMatch(app, /Z titulní strany Asterionu|homepage-history-title/);
+  assert.ok(app.includes('<div class="legacy-content homepage-history-content">${historicalHome}</div>'));
+});

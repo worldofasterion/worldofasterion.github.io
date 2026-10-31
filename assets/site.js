@@ -183,10 +183,9 @@
         <section><h2><a href="https://www.patreon.com/AsterionRPG/posts" target="_blank" rel="noopener">Asterion na Patreonu</a></h2><p>Nové materiály, ukázky z tvorby a zprávy ze světa Asterionu.</p></section>
       </div>
       ${historicalHome ? `
-        <section class="homepage-history" aria-labelledby="homepage-history-title">
-          <h2 id="homepage-history-title">Z titulní strany Asterionu</h2>
+        <div class="homepage-history">
           <div class="legacy-content homepage-history-content">${historicalHome}</div>
-        </section>` : ""}`;
+        </div>` : ""}`;
   }
 
   function catalogMetadataText(item) {
