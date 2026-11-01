@@ -111,12 +111,15 @@ test('cloud browser import separates announcements and public material, without 
   const window = {}, context = vm.createContext({window,URL});
   for (const file of ['data/site-data.js','data/patreon-public.js','assets/patreon-catalog.js','data/facebook-public.js','assets/facebook-catalog.js']) vm.runInContext(fs.readFileSync(path.join(repo,file),'utf8'),context);
   const before = window.ASTERION_DATA.catalog.length;
-  window.ASTERION_SOCIAL_CLOUD = {schema_version:1,patreon:[{...sync.normalizedPatreon(resource),summary:'Veřejný obsah',attachments:[],search_text:'Vyhledatelné slovo'}, {...sync.normalizedPatreon(resource),id:'188888888',title:'Uzamčený text',url:'https://www.patreon.com/posts/188888888',access:'members',summary:'Příspěvek pro členy'}],facebook:[{...sync.normalizedFacebook(fb,'42'),attachments:[]}]};
+  const alias = window.ASTERION_PATREON_PUBLIC.items.flatMap(p => p.related_posts || [])[0];
+  const aliasId = alias.url.match(/-(\d+)$/)[1];
+  window.ASTERION_SOCIAL_CLOUD = {schema_version:1,patreon:[{...sync.normalizedPatreon(resource),summary:'Veřejný obsah',attachments:[],search_text:'Vyhledatelné slovo'}, {...sync.normalizedPatreon(resource),id:'188888888',title:'Uzamčený text',url:'https://www.patreon.com/posts/188888888',access:'members',summary:'Příspěvek pro členy'}, {id:aliasId,provider:'patreon',url:alias.url,title:alias.title,date:'2024-11-01',published_at:'2024-11-01T12:00:00Z',legacy:true,access:'public'}],facebook:[{...sync.normalizedFacebook(fb,'42'),attachments:[]}]};
   const code = fs.readFileSync(path.join(repo,'assets/social-cloud.js'),'utf8'); vm.runInContext(code,context);
   const data = window.ASTERION_DATA;
   assert.equal(data.catalog.length,before+2);
   assert.ok(data.config.news.some(n => n.id === 'patreon-188888888'));
   assert.ok(!data.catalog.some(n => n.id === 'patreon-188888888'));
+  assert.ok(!data.config.news.some(n => n.id === 'patreon-' + aliasId));
   assert.equal(data.catalog.find(n => n.id === 'facebook-42_22').group,'Z Facebooku');
   const snapshot = JSON.stringify(data); vm.runInContext(code,context); assert.equal(JSON.stringify(data),snapshot);
 });

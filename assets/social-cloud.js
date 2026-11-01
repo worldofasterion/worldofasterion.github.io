@@ -23,6 +23,7 @@
     const source = data.social.sources.find(item => item.id === provider);
     const socialItems = new Map((source && source.items || []).map(item => [key(item.url),item]));
     for (const post of cloud[provider] || []) {
+      if (post.legacy && data.catalog.some(item => (item.related_posts || []).some(alias => key(alias.url) === key(post.url)))) continue;
       const id = provider + '-' + post.id;
       const existingIndex = data.catalog.findIndex(item => item.id === id || key(item.href) === key(post.url));
       const original = existingIndex >= 0 ? data.catalog[existingIndex] : null;
@@ -37,12 +38,13 @@
       } else if (provider === 'patreon' && post.access === 'members' && original) {
         data.catalog.splice(existingIndex,1); // A previously public post must no longer expose its body here.
       }
-      const title = original && post.legacy ? original.title : post.title + (post.access === 'members' ? ' (pro členy)' : '');
+      const previous = socialItems.get(key(post.url));
+      const baseTitle = original && post.legacy ? original.title : previous ? previous.title.replace(/ \(pro členy\)$/, '') : post.title;
+      const title = baseTitle + (post.access === 'members' ? ' (pro členy)' : '');
       const newsIndex = data.config.news.findIndex(item => item.id === id || key(item.route) === key(post.url));
       const news = {id,title,date:post.date,published_at:post.published_at,route:post.url,source:label,text:post.summary || original && original.summary || ''};
       if (newsIndex >= 0) data.config.news[newsIndex] = news; else data.config.news.push(news);
-      const previous = socialItems.get(key(post.url));
-      socialItems.set(key(post.url),{...previous,title:previous && post.legacy ? previous.title : title,date:post.date,url:post.url});
+      socialItems.set(key(post.url),{...previous,title,date:post.date,url:post.url});
     }
     if (source) { source.in_news = false; source.items = [...socialItems.values()].sort((a,b) => b.date.localeCompare(a.date)); }
     const catalogue = data.catalog.filter(item => item.group === group);

@@ -283,6 +283,7 @@ async function main() {
     const message = missing.length ? 'Čeká na propojení účtů: ' + missing.join(', ') + '. Web se nemění.' : 'Povinné přístupy jsou vyplněné; jejich platnost ověří až čtecí test API.';
     console.log(message);
     if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'## Propojení sociálních zdrojů\n\n' + message + '\n');
+    if (missing.length && process.env.STRICT_CONFIG === 'true') throw new Error('Scheduled sync is enabled but connection settings are missing');
     return;
   }
   const result = await sync(process.env,{apply:process.argv.includes('--apply')});
