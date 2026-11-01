@@ -20,7 +20,7 @@ Na kartě [Variables](https://github.com/worldofasterion/worldofasterion.github.
 | Název | Hodnota |
 | --- | --- |
 | `FACEBOOK_PAGE_ID` | Číselné ID stránky Asterionu; nejde o jméno AsterionSvet |
-| `SOCIAL_SYNC_ENABLED` | Zatím `false`; na `true` změnit až po úspěšném testu |
+| `SOCIAL_SYNC_ENABLED` | Už připravené `false`; na `true` změnit až po úspěšném testu |
 
 Hesla ani tokeny neposílej do chatu, issue nebo souboru v repozitáři. Nezapínej ladicí logování HTTP a neukládej syrové odpovědi API do artefaktů: mohou obsahovat neveřejná data nebo dočasné podpisy odkazů. GitHub Secrets jsou úložiště přístupů pro workflow; hodnoty nepatří do veřejného kódu.
 
@@ -49,7 +49,7 @@ Přidej další **Secrets**:
 
 Na GitHubu vytvoř [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new), Resource owner **worldofasterion**, přístup **Only select repositories → worldofasterion.github.io**, repository permission **Secrets: Read and write**. Ostatní práva nepřidávej; Metadata: Read je implicitní. Token nemá opravňovat k úpravě kódu, organizace nebo jiných repozitářů. Pokud organizace vyžádá schválení tokenu, schval ho jako správce. Zvol rozumnou dobu platnosti a její obnovu si poznamenej. Tento token sice neumožňuje přečíst existující hodnoty secrets, ale může je nahradit: chraň ho stejně jako ostatní klíče.
 
-Jeho hodnotu vlož do `SOCIAL_SECRETS_WRITER`. Na kartě **Variables** přidej `PATREON_AUTO_REFRESH=true`. Každý ostrý běh pak nejdřív ověří přístup k zápisu secrets, obnoví Patreon tokeny a uloží jejich nové hodnoty přes GitHub CLI se skrytým vstupem. Čtecí režim `check` tokeny nemění. Pokud se zápis nového tokenu nepodaří, workflow skončí chybou a bude nutné Patreon znovu propojit; nic se nevypíše do logu jako náhradní záloha.
+Jeho hodnotu vlož do `SOCIAL_SECRETS_WRITER`. Na kartě **Variables** změň již připravené `PATREON_AUTO_REFRESH=false` na `true`. Každý ostrý běh pak nejdřív ověří přístup k zápisu secrets, obnoví Patreon tokeny a uloží jejich nové hodnoty přes GitHub CLI se skrytým vstupem. Čtecí režim `check` tokeny nemění. Pokud se zápis nového tokenu nepodaří, workflow skončí chybou a bude nutné Patreon znovu propojit; nic se nevypíše do logu jako náhradní záloha.
 
 ## 3. Facebook
 
