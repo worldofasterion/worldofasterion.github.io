@@ -300,6 +300,7 @@
         <a href="#/indexes"><strong>Rejstříky a databáze</strong><span>${countGroup("Rejstříky a databáze")} soubory</span></a>
         ${data.stats.patreon_catalogue_entries ? `<a href="#/materials?group=${encodeURIComponent("Veřejně z Patreonu")}"><strong>Veřejně z Patreonu</strong><span>${data.stats.patreon_catalogue_entries} článků a galerií · ${data.stats.patreon_pdfs} PDF</span></a>` : ""}
         ${countGroup("Heraldika") ? `<a href="#/materials?group=${encodeURIComponent("Heraldika")}"><strong>Heraldika</strong><span>Erby rodů a měst · ${countGroup("Heraldika")} galerie</span></a>` : ""}
+        ${countGroup("Z Facebooku") ? `<a href="#/materials?group=${encodeURIComponent("Z Facebooku")}"><strong>Z Facebooku</strong><span>${countGroup("Z Facebooku")} veřejných příspěvků</span></a>` : ""}
         <a href="#/materials?group=${encodeURIComponent("Vaše tvorba")}"><strong>Vaše tvorba</strong><span>${countGroup("Vaše tvorba")} příspěvků</span></a>
       </nav>` : "";
 
@@ -392,7 +393,7 @@
       if (path === "adventures") filtered.sort(function (a, b) { return a.title.localeCompare(b.title, "cs"); });
 
       const visible = filtered.slice(0, shown);
-      const options = { search: search, showGroup: path !== "adventures" && !filters.group && !preset.group, showSummary: path === "adventures" || path === "indexes" || filters.group === "Veřejně z Patreonu" || filters.group === "Heraldika" };
+      const options = { search: search, showGroup: path !== "adventures" && !filters.group && !preset.group, showSummary: path === "adventures" || path === "indexes" || filters.group === "Veřejně z Patreonu" || filters.group === "Heraldika" || filters.group === "Z Facebooku" };
       list.innerHTML = path === "maps"
         ? renderMapGroups(visible, options)
         : (visible.map(function (item) { return materialRow(item, options); }).join("") || '<p class="empty-result">Tomuto výběru neodpovídá žádný soubor.</p>');
@@ -477,7 +478,8 @@
   function catalogPostLinks(item) {
     const attachments = (item.attachments || []).map(function (file) {
       const href = safeHref(file.href);
-      return `<a href="${escapeHtml(href)}">${escapeHtml(file.label)} (PDF, ${escapeHtml(formatBytes(file.size))})</a>`;
+      const type = file.extension || (file.href.match(/\.([a-z0-9]+)$/i) || [])[1] || "soubor";
+      return `<a href="${escapeHtml(href)}" download>${escapeHtml(file.label)} (${escapeHtml(type.toUpperCase())}, ${escapeHtml(formatBytes(file.size))})</a>`;
     });
     const related = (item.related_posts || []).map(function (post) {
       const href = safeHref(post.url);
